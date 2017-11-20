@@ -20,7 +20,6 @@ public class MainActivity extends Activity implements RewardedVideoAdListener {
     private RewardedVideoAd mRewardedVideoAd;
     private Button mShowAdButton;
     private TextView mCoinsTextView;
-    private int currentCoints;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
