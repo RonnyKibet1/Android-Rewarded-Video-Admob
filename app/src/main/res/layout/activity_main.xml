@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="Watch video to earn 25 coins" />
+        android:text="Watch video to earn 10 coins" />
 
     <TextView
         android:id="@+id/textView"

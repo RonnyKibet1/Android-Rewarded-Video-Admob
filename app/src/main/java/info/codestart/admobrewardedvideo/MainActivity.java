@@ -1,7 +1,8 @@
 package info.codestart.admobrewardedvideo;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -14,7 +15,7 @@ import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 
-public class MainActivity extends AppCompatActivity implements RewardedVideoAdListener {
+public class MainActivity extends Activity implements RewardedVideoAdListener {
 
     private RewardedVideoAd mRewardedVideoAd;
     private Button mShowAdButton;
@@ -34,44 +35,55 @@ public class MainActivity extends AppCompatActivity implements RewardedVideoAdLi
         mShowAdButton = (Button)findViewById(R.id.showAdButton);
         mCoinsTextView = (TextView)findViewById(R.id.textView);
 
+        //get current coins from prefs initially
+        mCoinsTextView.setText("Coins: " + getCoinsFromPrefs());
 
-        loadRewardedVideoAd();
+
 
         mShowAdButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //show video when ad is loaded
-                if (mRewardedVideoAd.isLoaded()) {
-                    mRewardedVideoAd.show();
-                }
+                loadRewardedVideoAd();
+
             }
         });
     }
 
     @Override
     public void onRewardedVideoAdLoaded() {
+        Toast.makeText(this, "video ad loaded", Toast.LENGTH_SHORT).show();
+        //show video when ad is loaded
+        if (mRewardedVideoAd.isLoaded()) {
+            mRewardedVideoAd.show();
+        }
 
     }
 
     @Override
     public void onRewardedVideoAdOpened() {
-
+        Toast.makeText(this, "video ad opened", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRewardedVideoStarted() {
-
+        Toast.makeText(this, "video ad started", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRewardedVideoAdClosed() {
-
+        Toast.makeText(this, "video ad closed", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRewarded(RewardItem rewardItem) {
         Toast.makeText(this, "onRewarded! currency: " + rewardItem.getType() + "  amount: " +
                 rewardItem.getAmount(), Toast.LENGTH_SHORT).show();
+
+        //add the new coins to the saved coins in prefs
+        saveCoinsToPrefs(getCoinsFromPrefs() + rewardItem.getAmount());
+
+        //set the coins that for user
+        mCoinsTextView.setText("Coins: " + getCoinsFromPrefs());
     }
 
     @Override
@@ -105,5 +117,18 @@ public class MainActivity extends AppCompatActivity implements RewardedVideoAdLi
     private void loadRewardedVideoAd() {
         mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917",
                 new AdRequest.Builder().build());
+    }
+
+    private void saveCoinsToPrefs(int amount){
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt("COINS", amount);
+        editor.apply();
+    }
+
+    private int getCoinsFromPrefs(){
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        int coins = sharedPref.getInt("COINS", 0);
+        return coins;
     }
 }
